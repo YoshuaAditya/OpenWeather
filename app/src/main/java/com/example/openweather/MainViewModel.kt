@@ -4,7 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
@@ -14,6 +13,7 @@ import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.*
+import com.bumptech.glide.Glide
 import com.example.openweather.model.WeatherData
 import com.example.openweather.network.ApiClient
 import com.example.openweather.network.OpenWeatherMapService
@@ -23,6 +23,7 @@ import kotlinx.coroutines.tasks.await
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 
 
 class MainViewModel : ViewModel() {
@@ -102,10 +103,15 @@ class MainViewModel : ViewModel() {
                     if (response.isSuccessful) {
                         val weatherData: WeatherData = response.body()!!
                         mainActivity.findViewById<TextView>(R.id.location).text = weatherData.name
-                        mainActivity.findViewById<TextView>(R.id.temperature).text =
-                            weatherData.temperature
+                        val temperatureText="${weatherData.main.temp.toInt()-273}\u00B0C"
+                        mainActivity.findViewById<TextView>(R.id.temperature).text = temperatureText
                         mainActivity.findViewById<TextView>(R.id.description).text =
-                            weatherData.weatherDescription
+                            weatherData.weather[0].description
+                        Glide.with(mainActivity).load("http://openweathermap.org/img/w/${weatherData.weather[0].icon}.png")
+                            .into(mainActivity.findViewById(R.id.weather_icon))
+                        val calendar: Calendar = Calendar.getInstance(Locale.getDefault())
+                        val timeText="Last Updated ${calendar.get(Calendar.HOUR_OF_DAY)}:${calendar.get(Calendar.MINUTE)}"
+                        mainActivity.findViewById<TextView>(R.id.time).text = timeText
                     }
                 }
 
