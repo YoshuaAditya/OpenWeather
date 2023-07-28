@@ -131,10 +131,11 @@ class MainViewModel(val dataStore: DataStore<Preferences>) : ViewModel() {
                 .setNegativeButton("Cancel", null)
                 .show()
         } else {
-            if (!isOnline()) {
-                Toast.makeText(mainActivity, "Not connected to internet", Toast.LENGTH_SHORT).show()
-                return@launch
-            }
+            //suddenly this code doesn't work as in failed to ping the internet, disabling it
+//            if (!isOnline()) {
+//                Toast.makeText(mainActivity, "Not connected to internet", Toast.LENGTH_SHORT).show()
+//                return@launch
+//            }
             val locationServices = LocationServices.getFusedLocationProviderClient(mainActivity)
             val result = locationServices.lastLocation.await()
             try {
@@ -149,7 +150,7 @@ class MainViewModel(val dataStore: DataStore<Preferences>) : ViewModel() {
                  */
                 Toast.makeText(
                     mainActivity,
-                    "Failed to get current location, please try again after some time.",
+                    "Failed to get current location, please check internet and try again after some time.",
                     Toast.LENGTH_SHORT
                 ).show()
                 Log.e("error", "Failed to get current location")
@@ -198,6 +199,7 @@ class MainViewModel(val dataStore: DataStore<Preferences>) : ViewModel() {
                 }
 
                 override fun onFailure(call: Call<WeatherData?>, t: Throwable) {
+                    Toast.makeText(mainActivity, "Failed to get weather data.", Toast.LENGTH_SHORT).show()
                     println(t)
                 }
             })
